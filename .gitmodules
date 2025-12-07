@@ -1,0 +1,3 @@
+[submodule "lib/halo-auto-merge-test"]
+	path = lib/halo-auto-merge-test
+	url = https://github.com/ngurfinkel/halo-auto-merge-test.git
