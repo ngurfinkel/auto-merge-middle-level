@@ -11,6 +11,22 @@ jobs:
   update-parent:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          path: current-repo
+      
+      - name: Get commit author info
+        id: author
+        run: |
+          cd current-repo
+          AUTHOR_EMAIL=$(git log -1 --format='%ae' ${{ github.sha }})
+          AUTHOR_NAME=$(git log -1 --format='%an' ${{ github.sha }})
+          COMMIT_MSG=$(git log -1 --format='%s' ${{ github.sha }})
+          echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+          echo "name=$AUTHOR_NAME" >> $GITHUB_OUTPUT
+          echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+      
       - name: Checkout parent repository
         uses: actions/checkout@v4
         with:
@@ -18,16 +34,6 @@ jobs:
           token: ${{ secrets.AUTO_MERGE_PAT }}
           path: parent-repo
           submodules: recursive
-      
-      - name: Get commit author info
-        id: author
-        run: |
-          AUTHOR_EMAIL=$(git log -1 --format='%ae' ${{ github.sha }})
-          AUTHOR_NAME=$(git log -1 --format='%an' ${{ github.sha }})
-          COMMIT_MSG=$(git log -1 --format='%s' ${{ github.sha }})
-          echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
-          echo "name=$AUTHOR_NAME" >> $GITHUB_OUTPUT
-          echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
       
       - name: Update submodule
         run: |
